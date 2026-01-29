@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Play 2048 Online - Free Unblocked Puzzle Game | Best Strategy Guide</title>
+    <meta name="description" content="Play 2048 online for free. Join the numbers and get to the 2048 tile! A mobile-friendly, unblocked version of the classic puzzle game with tips and strategies.">
+    <meta name="keywords" content="2048 game, play 2048, 2048 online, 2048 unblocked, puzzle game, math game, 2048 strategy">
+    <meta name="author" content="Your Site Name">
+    <link rel="canonical" href="https://2048onlinegamefree.github.io/" />
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "2048",
+      "description": "A single-player sliding tile puzzle video game where the objective is to slide numbered tiles on a grid to combine them to create a tile with the number 2048.",
+      "genre": ["Puzzle", "Strategy"],
+      "gamePlatform": ["Web Browser", "Mobile"],
+      "applicationCategory": "Game",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Your Site Name"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #faf8ef;
+            --grid-color: #bbada0;
+            --empty-tile: #cdc1b4;
+            --text-dark: #776e65;
+            --text-light: #f9f6f2;
+        }
+
+        body {
+            font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header & Scores */
+        .header-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title h1 {
+            font-size: 60px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .scores-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .score-box {
+            background: var(--grid-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 3px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .score-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #eee4da;
+        }
+
+        .score-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .controls-row {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .game-intro { font-size: 16px; line-height: 1.4; }
+        
+        .new-game-btn {
+            background: #8f7a66;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .new-game-btn:hover { background: #7f6a56; }
+
+        /* Game Board */
+        .game-container {
+            position: relative;
+            padding: 10px;
+            cursor: default;
+            background: var(--grid-color);
+            border-radius: 6px;
+            width: 320px;
+            height: 320px;
+            box-sizing: content-box;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-cell {
+            background: var(--empty-tile);
+            border-radius: 3px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 35px;
+            animation: pop 0.2s ease-in;
+            color: var(--text-dark);
+            user-select: none;
+        }
+
+        /* Tile Colors */
+        .tile-2 { background: #eee4da; }
+        .tile-4 { background: #ede0c8; }
+        .tile-8 { background: #f2b179; color: var(--text-light); }
+        .tile-16 { background: #f59563; color: var(--text-light); }
+        .tile-32 { background: #f67c5f; color: var(--text-light); }
+        .tile-64 { background: #f65e3b; color: var(--text-light); }
+        .tile-128 { background: #edcf72; color: var(--text-light); font-size: 30px; }
+        .tile-256 { background: #edcc61; color: var(--text-light); font-size: 30px; }
+        .tile-512 { background: #edc850; color: var(--text-light); font-size: 30px; }
+        .tile-1024 { background: #edc53f; color: var(--text-light); font-size: 24px; }
+        .tile-2048 { background: #edc22e; color: var(--text-light); font-size: 24px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.5); }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(238, 228, 218, 0.73);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .game-over-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .game-over-overlay h2 { font-size: 40px; margin-bottom: 10px; color: #776e65; }
+
+        /* SEO Content Section */
+        .content-section {
+            max-width: 700px;
+            margin-top: 50px;
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .content-section h2 { color: #333; margin-top: 30px; }
+        .content-section ul { padding-left: 20px; }
+        
+        footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+
+        @media (min-width: 500px) {
+            .game-container { width: 450px; height: 450px; }
+            .grid-cell { font-size: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-container">
+        <div class="title">
+            <h1>2048</h1>
+        </div>
+        <div class="scores-container">
+            <div class="score-box">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">Best</div>
+                <div class="score-value" id="bestScore">0</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="controls-row">
+        <div class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></div>
+        <button class="new-game-btn" onclick="startGame()">New Game</button>
+    </div>
+
+    <div class="game-container">
+        <div class="game-over-overlay" id="gameOverMsg">
+            <h2>Game Over!</h2>
+            <button class="new-game-btn" onclick="startGame()">Try Again</button>
+        </div>
+        <div class="grid-container" id="grid">
+            <!-- Grid generated by JS -->
+        </div>
+    </div>
+
+    <!-- SEO Optimized Long Content -->
+    <article class="content-section">
+        <h2>About 2048 Game</h2>
+        <p>Welcome to the <strong>2048 game</strong>, the addictive sliding tile puzzle that has captivated millions of players worldwide. The objective is simple yet challenging: slide numbered tiles on a 4x4 grid to combine them. When two tiles with the same number touch, they merge into one! Your goal is to keep merging until you create a tile with the number <strong>2048</strong>.</p>
+
+        <h3>How to Play 2048 Online?</h3>
+        <p>Playing 2048 online is easy and requires no installation. It works on desktop (using arrow keys) and mobile devices (using touch swipes).</p>
+        <ul>
+            <li><strong>Move Tiles:</strong> Use your Arrow Keys (Up, Down, Left, Right) or swipe on your screen.</li>
+            <li><strong>Merge Numbers:</strong> 2+2=4, 4+4=8, 8+8=16, and so on.</li>
+            <li><strong>Win:</strong> Reach the 2048 tile to win the game (though you can keep playing for a higher score).</li>
+            <li><strong>Game Over:</strong> The game ends when the board is full and no more moves are possible.</li>
+        </ul>
+
+        <h3>Best Strategies to Win 2048</h3>
+        <p>Struggling to reach the 2048 tile? Here are some pro tips:</p>
+        <ol>
+            <li><strong>Keep Your High Tile in a Corner:</strong> Pick a corner (e.g., bottom-right) and try to keep your highest number there.</li>
+            <li><strong>Avoid Moving Up:</strong> If you keep your high tiles at the bottom, try never to press the "Up" arrow unless absolutely necessary. This prevents smaller tiles from getting trapped underneath your big ones.</li>
+            <li><strong>Plan Ahead:</strong> Don't just swipe randomly. Look at the board and anticipate where new tiles (2 or 4) will spawn.</li>
+        </ol>
+
+        <h3>History of the Game</h3>
+        <p>2048 was originally created by Italian web developer Gabriele Cirulli in 2014. It was inspired by similar games like "1024" and "Threes". The game became an instant viral hit due to its simple mechanics and open-source code.</p>
+
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <h4>Is 2048 free to play?</h4>
+        <p>Yes, this version of 2048 is completely free and unblocked. You can play it directly in your browser.</p>
+        
+        <h4>What is the highest possible score in 2048?</h4>
+        <p>While the goal is 2048, the theoretical maximum score is much higher. If you play perfectly on a 4x4 grid, the maximum possible tile is 131,072.</p>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Play 2048 Online. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gridDisplay = document.getElementById('grid');
+        const scoreDisplay = document.getElementById('score');
+        const bestScoreDisplay = document.getElementById('bestScore');
+        const gameOverMsg = document.getElementById('gameOverMsg');
+        let squares = [];
+        let score = 0;
+        let width = 4;
+        let bestScore = localStorage.getItem('2048-best') || 0;
+
+        bestScoreDisplay.innerHTML = bestScore;
+
+        function startGame() {
+            gridDisplay.innerHTML = '';
+            squares = [];
+            score = 0;
+            scoreDisplay.innerHTML = 0;
+            gameOverMsg.classList.remove('active');
+            
+            // Create Board
+            for (let i = 0; i < width * width; i++) {
+                let square = document.createElement('div');
+                square.className = 'grid-cell';
+                square.innerHTML = '';
+                gridDisplay.appendChild(square);
+                squares.push(square);
+            }
+            
+            generate();
+            generate();
+        }
+
+        function generate() {
+            let randomNumber = Math.floor(Math.random() * squares.length);
+            if (squares[randomNumber].innerHTML == '') {
+                squares[randomNumber].innerHTML = Math.random() > 0.9 ? 4 : 2;
+                updateColors();
+                checkForGameOver();
+            } else {
+                if (squares.some(square => square.innerHTML === '')) generate();
+            }
+        }
+
+        function moveRight() {
+            let moved = false;
+            for (let i = 0; i < 16; i++) {
+                if (i % 4 === 0) {
+                    let row = [
+                        parseInt(squares[i].innerHTML || 0),
+                        parseInt(squares[i+1].innerHTML || 0),
+                        parseInt(squares[i+2].innerHTML || 0),
+                        parseInt(squares[i+3].innerHTML || 0)
+                    ];
+
+                    let filteredRow = row.filter(num => num);
+                    let missing = 4 - filteredRow.length;
+                    let zeros = Array(missing).fill(0);
+                    let newRow = zeros.concat(filteredRow);
+
+                    if (row.join(',') !== newRow.join(',')) moved = true;
+
+                    squares[i].innerHTML = newRow[0] || '';
+                    squares[i+1].innerHTML = newRow[1] || '';
+                    squares[i+2].innerHTML = newRow[2] || '';
+                    squares[i+3].innerHTML = newRow[3] || '';
+                }
+            }
+            return moved;
+        }
+
+        function moveLeft() {
+            let moved = false;
+            for (let i = 0; i < 16; i++) {
+                if (i % 4 === 0) {
+                    let row = [
+                        parseInt(squares[i].innerHTML || 0),
+                        parseInt(squares[i+1].innerHTML || 0),
+                        parseInt(squares[i+2].innerHTML || 0),
+                        parseInt(squares[i+3].innerHTML || 0)
+                    ];
+
+                    let filteredRow = row.filter(num => num);
+                    let missing = 4 - filteredRow.length;
+                    let zeros = Array(missing).fill(0);
+                    let newRow = filteredRow.concat(zeros);
+
+                    if (row.join(',') !== newRow.join(',')) moved = true;
+
+                    squares[i].innerHTML = newRow[0] || '';
+                    squares[i+1].innerHTML = newRow[1] || '';
+                    squares[i+2].innerHTML = newRow[2] || '';
+                    squares[i+3].innerHTML = newRow[3] || '';
+                }
+            }
+            return moved;
+        }
+
+        function moveDown() {
+            let moved = false;
+            for (let i = 0; i < 4; i++) {
+                let column = [
+                    parseInt(squares[i].innerHTML || 0),
+                    parseInt(squares[i+width].innerHTML || 0),
+                    parseInt(squares[i+(width*2)].innerHTML || 0),
+                    parseInt(squares[i+(width*3)].innerHTML || 0)
+                ];
+
+                let filteredColumn = column.filter(num => num);
+                let missing = 4 - filteredColumn.length;
+                let zeros = Array(missing).fill(0);
+                let newColumn = zeros.concat(filteredColumn);
+
+                if (column.join(',') !== newColumn.join(',')) moved = true;
+
+                squares[i].innerHTML = newColumn[0] || '';
+                squares[i+width].innerHTML = newColumn[1] || '';
+                squares[i+(width*2)].innerHTML = newColumn[2] || '';
+                squares[i+(width*3)].innerHTML = newColumn[3] || '';
+            }
+            return moved;
+        }
+
+        function moveUp() {
+            let moved = false;
+            for (let i = 0; i < 4; i++) {
+                let column = [
+                    parseInt(squares[i].innerHTML || 0),
+                    parseInt(squares[i+width].innerHTML || 0),
+                    parseInt(squares[i+(width*2)].innerHTML || 0),
+                    parseInt(squares[i+(width*3)].innerHTML || 0)
+                ];
+
+                let filteredColumn = column.filter(num => num);
+                let missing = 4 - filteredColumn.length;
+                let zeros = Array(missing).fill(0);
+                let newColumn = filteredColumn.concat(zeros);
+
+                if (column.join(',') !== newColumn.join(',')) moved = true;
+
+                squares[i].innerHTML = newColumn[0] || '';
+                squares[i+width].innerHTML = newColumn[1] || '';
+                squares[i+(width*2)].innerHTML = newColumn[2] || '';
+                squares[i+(width*3)].innerHTML = newColumn[3] || '';
+            }
+            return moved;
+        }
+
+        function combineRow() {
+            let combined = false;
+            for (let i = 0; i < 15; i++) {
+                // Ensure we are not checking across rows (e.g. index 3 and 4)
+                if ((i + 1) % 4 === 0) continue;
+
+                if (squares[i].innerHTML === squares[i+1].innerHTML && squares[i].innerHTML !== '') {
+                    let combinedTotal = parseInt(squares[i].innerHTML) + parseInt(squares[i+1].innerHTML);
+                    squares[i].innerHTML = combinedTotal;
+                    squares[i+1].innerHTML = '';
+                    score += combinedTotal;
+                    scoreDisplay.innerHTML = score;
+                    checkBestScore();
+                    combined = true;
+                }
+            }
+            return combined;
+        }
+
+        function combineColumn() {
+            let combined = false;
+            for (let i = 0; i < 12; i++) {
+                if (squares[i].innerHTML === squares[i+width].innerHTML && squares[i].innerHTML !== '') {
+                    let combinedTotal = parseInt(squares[i].innerHTML) + parseInt(squares[i+width].innerHTML);
+                    squares[i].innerHTML = combinedTotal;
+                    squares[i+width].innerHTML = '';
+                    score += combinedTotal;
+                    scoreDisplay.innerHTML = score;
+                    checkBestScore();
+                    combined = true;
+                }
+            }
+            return combined;
+        }
+
+        function control(e) {
+            let moved = false;
+            if (e.keyCode === 39) { keyRight(); }
+            else if (e.keyCode === 37) { keyLeft(); }
+            else if (e.keyCode === 38) { keyUp(); }
+            else if (e.keyCode === 40) { keyDown(); }
+        }
+
+        function keyRight() {
+            let m1 = moveRight();
+            let c = combineRow();
+            let m2 = moveRight();
+            if (m1 || c || m2) { updateColors(); generate(); }
+        }
+
+        function keyLeft() {
+            let m1 = moveLeft();
+            let c = combineRow();
+            let m2 = moveLeft();
+            if (m1 || c || m2) { updateColors(); generate(); }
+        }
+
+        function keyDown() {
+            let m1 = moveDown();
+            let c = combineColumn();
+            let m2 = moveDown();
+            if (m1 || c || m2) { updateColors(); generate(); }
+        }
+
+        function keyUp() {
+            let m1 = moveUp();
+            let c = combineColumn();
+            let m2 = moveUp();
+            if (m1 || c || m2) { updateColors(); generate(); }
+        }
+
+        function updateColors() {
+            squares.forEach(square => {
+                square.className = 'grid-cell';
+                if (square.innerHTML !== '') {
+                    square.classList.add('tile-' + square.innerHTML);
+                }
+            });
+        }
+
+        function checkForGameOver() {
+            let zeros = 0;
+            for (let i = 0; i < squares.length; i++) {
+                if (squares[i].innerHTML == '') zeros++;
+            }
+            
+            // Check if merges are possible
+            let movesPossible = false;
+            if (zeros === 0) {
+                 // Check horizontal merges
+                 for (let i = 0; i < 15; i++) {
+                    if ((i + 1) % 4 !== 0) {
+                        if (squares[i].innerHTML === squares[i+1].innerHTML) movesPossible = true;
+                    }
+                 }
+                 // Check vertical merges
+                 for (let i = 0; i < 12; i++) {
+                    if (squares[i].innerHTML === squares[i+width].innerHTML) movesPossible = true;
+                 }
+                 
+                 if (!movesPossible) {
+                     gameOverMsg.classList.add('active');
+                 }
+            }
+        }
+
+        function checkBestScore() {
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreDisplay.innerHTML = bestScore;
+                localStorage.setItem('2048-best', bestScore);
+            }
+        }
+
+        // Touch Controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: false});
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleGesture();
+        }, {passive: false});
+
+        function handleGesture() {
+            let xDiff = touchEndX - touchStartX;
+            let yDiff = touchEndY - touchStartY;
+            
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                // Horizontal
+                if (Math.abs(xDiff) > 30) { // Threshold
+                    if (xDiff > 0) keyRight();
+                    else keyLeft();
+                }
+            } else {
+                // Vertical
+                if (Math.abs(yDiff) > 30) {
+                    if (yDiff > 0) keyDown();
+                    else keyUp();
+                }
+            }
+        }
+
+        // Prevent scrolling with arrows
+        window.addEventListener("keydown", function(e) {
+            if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+
+        document.addEventListener('keyup', control);
+        
+        // Init Game
+        startGame();
+
+    </script>
+</body>
+</html>
